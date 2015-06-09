@@ -9,3 +9,6 @@ start: compile
 
 eunit: compile
 	rebar eunit skip_deps=true
+
+init:
+	rebar get-deps

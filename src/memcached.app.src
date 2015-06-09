@@ -1,0 +1,12 @@
+{application, memcached,
+ [
+  {description, "memcached client"},
+  {vsn, "1"},
+  {registered, [memcached_sup]},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { memcached_app, []}},
+  {env, []}
+ ]}.

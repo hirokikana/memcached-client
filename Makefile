@@ -20,3 +20,6 @@ init:
 
 dialyze: compile .dialyzer.plt
 	dialyzer --plt .dialyzer.plt -r ebin $(DIALYZER_OPTS)
+
+clean:
+	rebar clean

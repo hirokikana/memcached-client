@@ -1,10 +1,14 @@
+%% ===================================================================
+%%  どのmemcached serverを利用すべきか管理するプロセス
+%% ===================================================================
+
 -module(memcached_router).
 
 -behaviour(gen_server).
 
-%% -------------------------------------
-%%  gen_server callbacks
-%% -------------------------------------
+%% ===================================================================
+%%  export
+%% ===================================================================
 -export([
          init/1,
          handle_call/3,
@@ -19,15 +23,28 @@
          get_server/1
 ]).
 
+
+%% ===================================================================
+%%  exported functions
+%% ===================================================================
+%% memcached_routerを起動する
+-spec start_link() -> {ok, pid()} | {error, term()}.
 start_link() ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
+%% memcached_routerにmemcached serverを追加する
+-spec add_server(memcached:server(), pid()) -> ok.
 add_server(Server, Pid) ->
     gen_server:call(?MODULE, {add, Server, Pid}).
 
+%% 指定したキーで利用すべきmemcached serverを返す
+-spec get_server(memcached:key()) -> {memcached:server(), pid()}.
 get_server(Key) ->
     gen_server:call(?MODULE, {get, Key}).
 
+%% ===================================================================
+%%  gen_server callbacks
+%% ===================================================================
 init(_Args) ->
     State = [],
     {ok, State}.

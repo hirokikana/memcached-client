@@ -43,7 +43,7 @@ handle_call(_Msg, _From, State) ->
     {reply, State}.
 
 handle_cast(_Msg, State) ->
-    {reply, State}.
+    {noreply, State}.
 
 handle_info(_Msg, State) ->
     {noreply, State}.

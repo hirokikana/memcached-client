@@ -24,7 +24,7 @@
 start_link() ->
     supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
--spec start_server(memcached:server()) -> ok.
+-spec start_server(memcached:server()) -> supervisor:startchild_ret().
 start_server(MemcachedServer) ->
     {Host, Port} = MemcachedServer,
     ChildSpec = {MemcachedServer,

@@ -10,12 +10,17 @@
          version/0
 ]).
 
+
+-type key() :: term().
 -type server_host() :: atom().
 -type server_port() :: atom().
 -type server() :: {server_host(), server_port()}.
 -type server_list() :: [server()].
 -export_type(
-   [server/0]
+   [
+    server/0,
+    key/0
+   ]
 ).
 
 -spec start_link(server_list()) -> ok.

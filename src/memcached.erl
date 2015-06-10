@@ -5,6 +5,8 @@
          stats/0,
          get/1,
          set/2,
+         set/3,
+         delete/1,
          version/0
 ]).
 
@@ -36,10 +38,16 @@ version() ->
     memcached_server:version(Pid).
 
 set(Key, Value) ->
+    set(Key, Value, 0).
+
+set(Key, Value, Expire) ->
     {_, Pid} = memcached_router:get_server(Key),
-    memcached_server:set(Pid, Key, Value).
+    memcached_server:set(Pid, Key, Value, Expire).
 
 get(Key) ->
     {_, Pid} = memcached_router:get_server(Key),
     memcached_server:get(Pid, Key).
 
+delete(Key) ->
+    {_, Pid} = memcached_router:get_server(Key),
+    memcached_server:delete(Pid, Key).

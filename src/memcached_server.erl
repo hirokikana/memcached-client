@@ -33,7 +33,8 @@ start_link(MemcachedServer) ->
     gen_server:start_link(?MODULE, [MemcachedServer], []).
 
 init(Args) ->
-    {ok, Sock} = gen_tcp:connect("localhost", 11211, [binary, {active, false}]),
+    {Host, Port} = hd(Args),
+    {ok, Sock} = gen_tcp:connect(Host, Port, [binary, {active, false}]),
     State = {sock, Sock},
     {ok, State}.
 
@@ -43,7 +44,7 @@ handle_call({get, Key}, _From, State) ->
 
     {ok, Response} = gen_tcp:recv(Sock,0),
     Result = case Response of 
-                 <<"VALUE ", T/binary>> ->
+                 <<"VALUE ", _T/binary>> ->
                      [_, Value|_] = binary:split(Response, <<"\r\n">>, [global]),
                      {ok, binary_to_term(Value)}
              end,
@@ -66,12 +67,28 @@ handle_call({stats}, _From, State) ->
     {sock, Sock} = State,
     gen_tcp:send(Sock, "stats\r\n"),
     {ok, Response} = gen_tcp:recv(Sock,0),
-    {reply, Response, State};
+    Stats = case Response of
+                <<"STAT ", T/binary>> ->
+                    lists:map(fun(X) ->
+                                      case binary:split(X, <<" ">>, [global]) of
+                                          [_, Key, Value] ->
+                                              {Key, Value};
+                                          _ ->
+                                              X
+                                      end
+                              end,
+                              binary:split(T, <<"\r\n">>, [global]))
+            end,
+    {reply, Stats, State};
 handle_call({version}, _From, State) ->
     {sock, Sock} = State,
-    gen_tcp:send(Sock, "version\n"),
+    gen_tcp:send(Sock, "version\r\n"),
     {ok, Response} = gen_tcp:recv(Sock,0),
-    {reply, Response, State};
+    VersionNum = case Response of
+                     <<"VERSION ", Version/binary>> ->
+                         hd(binary:split(Version,<<"\r\n">>))
+                 end,
+    {reply, binary_to_list(VersionNum), State};
 handle_call(_Msg, _From, State) ->
     {reply, State}.
 

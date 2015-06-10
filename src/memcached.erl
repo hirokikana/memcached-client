@@ -4,7 +4,8 @@
          start_link/1,
          stats/0,
          get/1,
-         set/2
+         set/2,
+         version/0
 ]).
 
 -type server_host() :: atom().
@@ -27,12 +28,12 @@ stats() ->
     %% memcached_routerから適切なPidを取得してくる
     Key = aa,
     {_, Pid} = memcached_router:get_server(Key),
-
-    %% リクエストを投げる
     memcached_server:stats(Pid).
 
 version() ->
-    ok.
+    Key = aa,
+    {_, Pid} = memcached_router:get_server(Key),
+    memcached_server:version(Pid).
 
 set(Key, Value) ->
     {_, Pid} = memcached_router:get_server(Key),

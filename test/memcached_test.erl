@@ -6,8 +6,12 @@
 memcached_test_() ->
     {
       foreach,
-      fun() -> application:ensure_started(memcached) end,
-      fun(_) -> application:stop(memcached) end,
+      fun() -> 
+              application:ensure_started(memcached)
+      end,
+      fun(_) -> 
+              application:stop(memcached)
+      end,
       [
        {"SET/GET",
         fun() ->
